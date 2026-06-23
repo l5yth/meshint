@@ -1,0 +1,18 @@
+{
+  "fmt": {
+    "include": ["static/js/", "tests/", "scripts/"],
+    "exclude": ["tests/fixtures/"],
+    "lineWidth": 100
+  },
+  "lint": {
+    "include": ["static/js/", "tests/", "scripts/"]
+  },
+  "test": {
+    "include": ["tests/"]
+  },
+  "tasks": {
+    "test": "deno test --allow-read",
+    "demo": "deno run --allow-net scripts/demo-data.js",
+    "check": "deno fmt --check && deno lint && deno test --allow-read"
+  }
+}

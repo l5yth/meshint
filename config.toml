@@ -1,0 +1,23 @@
+# meshcom — Zola config (sister to dweb-mesh).
+# base_url = "/" → host-less root paths; the same build works at any static host
+# (GitHub Pages, a Freifunk box, embedded in a Zola site). SPEC.md D2/D18.
+# To deploy under a subpath: `zola build --base-url /sub/`.
+base_url = "/"
+title = "meshcom"
+description = "Ambient mission-control for a federated LoRa mesh — a live potato-mesh dashboard."
+default_language = "en"
+
+compile_sass = false
+build_search_index = false
+generate_feeds = false
+minify_html = false
+
+[extra]
+# Data source (SPEC.md D7/D8). Override per-load with ?api=<url>.
+api_base = "https://dweb.potatomesh.net"
+# Map tiles (SPEC.md D17): CARTO dark by default; point at a self-hosted/Freifunk
+# tile server to stay fully off-grid.
+tile_url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+tile_attribution = "CARTO · OSM"
+tile_subdomains = "abcd"
+tile_max_zoom = 19
