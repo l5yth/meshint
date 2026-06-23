@@ -1,0 +1,19 @@
+meshcom
+Copyright 2026 l5yth
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product bundles third-party components:
+
+- Leaflet 1.9.4 — BSD-2-Clause — https://leafletjs.com
+  static/vendor/leaflet/ (see static/vendor/leaflet/LICENSE)
+- Press Start 2P — SIL Open Font License 1.1
+  static/fonts/PressStart2P.woff2 (see static/fonts/PressStart2P-OFL.txt)
+- Departure Mono
+  static/fonts/DepartureMono.woff2 (see static/fonts/DepartureMono-LICENSE.txt)
+
+Runtime data and services (not bundled, fetched live):
+- Mesh data from potato-mesh instances (default https://dweb.potatomesh.net), Apache-2.0:
+  https://github.com/l5yth/potato-mesh
+- Map tiles © CARTO (https://carto.com), © OpenStreetMap contributors
+  (https://www.openstreetmap.org/copyright)
