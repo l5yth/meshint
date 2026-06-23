@@ -1,8 +1,7 @@
 # meshcom — SPEC
 
-> Status: **DRAFT — awaiting your explicit confirmation of each numbered decision (§D).**
-> Until every item in §D is confirmed, no build work starts (kickoff Phase 0).
-> Re-verified at every later checkpoint so we don't drift from intent.
+> Status: **LOCKED — all 18 decisions (D1–D18) confirmed 2026-06-23.**
+> Re-verified at every later checkpoint so we don't drift from intent. Any change requires re-confirmation.
 
 ---
 
