@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon" href="{{ get_url(path='favicon.svg') }}" />
+  <title>{{ config.title }}</title>
+  <link rel="stylesheet" href="{{ get_url(path='vendor/leaflet/leaflet.css') }}" />
+  <link rel="stylesheet" href="{{ get_url(path='css/app.css') }}" />
+  <script>
+    // Build-time defaults injected from config.toml [extra]; config.js resolves
+    // the effective values (?api= override, normalization). SPEC.md D7/D8.
+    window.__MESHCOM_BUILD_CONFIG__ = {
+      apiBase: "{{ config.extra.api_base | safe }}",
+      tileUrl: "{{ config.extra.tile_url | safe }}",
+      tileAttribution: "{{ config.extra.tile_attribution | safe }}",
+      tileSubdomains: "{{ config.extra.tile_subdomains | safe }}",
+      tileMaxZoom: {{ config.extra.tile_max_zoom | default(value=19) }}
+    };
+  </script>
+</head>
+<body>
+  <div class="crt-vig"></div>
+  <div class="crt-overlay"></div>
+
+  <div class="cc">
+    <div id="topbar"></div>
+
+    <div class="cc-mid">
+      <aside id="rail" class="panel scrl"></aside>
+      <div id="map" class="panel panel-map"></div>
+      <section id="feed" class="panel panel-feed"></section>
+    </div>
+
+    <section id="roster" class="panel"></section>
+
+    <div id="ticker"></div>
+  </div>
+
+  <script src="{{ get_url(path='vendor/leaflet/leaflet.js') }}"></script>
+  <script type="module" src="{{ get_url(path='js/app.js') }}"></script>
+</body>
+</html>
