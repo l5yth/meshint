@@ -1,0 +1,21 @@
+# Build output
+/public/
+
+# Node & tooling
+/node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Secrets / local env
+.env
+.env.*
+!.env.example
+*.local
+.claude/settings.local.json
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
