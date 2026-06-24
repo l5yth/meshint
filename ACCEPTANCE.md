@@ -180,6 +180,82 @@ A criterion **passes** only if it is fully met. Partial = fail (note it).
 
 ---
 
+## Feature: Realtime updates via pubsub (SSE) + update flash
+
+> Realtime updates via the upstream **`/api/events`** SSE stream, used as the **primary** live
+> source when available (else polling continues unchanged), plus an ambient, **non-looping**
+> **update flash** on changed nodes/messages. New decisions **D23–D28** in `SPEC.md`. Judge
+> these standalone, then verify the regression line below. Live on `dweb.potatomesh.net` today;
+> the shipped `potatomesh.net` default has **no** events yet and must keep working via polling.
+
+### L. Realtime updates (pubsub) + update flash
+
+- **AC-45** `[code/auto]` An **events/SSE transport** exists alongside the polling transport and
+  conforms to the **same `{ start, stop, running }` contract** (AC-37). It consumes `/api/events`
+  via the browser-native **`EventSource`** — **no WebSocket, no vendored/CDN dependency, no new
+  asset origin**. It is **unit-tested** with an injected `EventSource` fake (connect, message,
+  fatal error, teardown). *(D23, D24)*
+- **AC-46** `[obs/code]` On load, state is populated from the **REST API first** (initial
+  snapshot); then, when `/api/events` is reachable, the SSE stream becomes the **primary** live
+  source and the **fast per-cadence poll is stopped**, leaving only a **~5-minute reconcile**
+  full refresh as a backstop. *(D23)*
+- **AC-47** `[auto/code]` Each `event: change` carrying `data:{"collection":"<name>"}` triggers a
+  **refetch of just that collection** (messages **incrementally via `since`**; `positions`
+  handled as a `nodes` change), recomputes presence/counters via the **existing transforms**, and
+  **diffs** against current state. Rapid events are **coalesced (~300 ms)** into a single batched
+  refetch. A unit test proves a `change:nodes` event causes **one** nodes refetch and surfaces the
+  **changed node ids**. *(D25, D27)*
+- **AC-48** `[obs/code]` **Capability detection is runtime, not config:** a successful
+  `EventSource` connection enables pubsub; a **fatal** connection error (e.g. 404/CORS,
+  `readyState === CLOSED`) makes the app **fall back to normal polling** at the `/version` cadence
+  with no user-visible breakage. Verifiable by pointing `?api=` at an instance **without**
+  `/api/events` (e.g. the shipped `potatomesh.net` default) → the dashboard still updates via
+  polling. *(D26)*
+- **AC-49** `[obs]` **Streaming resilience:** a **transient** SSE drop after a good connect shows
+  the existing **OFFLINE/degraded** indicator, **retains last-known data**, and **auto-recovers**
+  (reconnects / resumes live updates) when the stream returns — matching AC-31 for the streaming
+  path. *(D26)*
+- **AC-50** `[obs/code]` **Update flash:** when a diff arrives — and **never on the initial
+  load** — changed/new **node markers** flash a **one-shot** ring that **flashes white and fades to
+  the node's protocol color**, **decaying in ≈1.2 s**; a **new message** flashes its **sender's
+  node marker** while the feed row keeps its existing entry animation. The flash **does not loop**,
+  is **coalesced/rate-capped** so a busy mesh **cannot strobe**, and animates
+  **transform/opacity/color on a separate overlay layer** — **no layout reflow, no scroll jump**.
+  *(D28)*
+- **AC-51** `[obs/code]` **Unattended safety:** the `EventSource` and all flash timers are
+  **closed/cleared on teardown** (`transport.stop()` closes the stream); over a long run there is
+  **no unbounded growth** of listeners, DOM flash nodes, or timers. *(D28)*
+- **AC-52** `[auto]` **Offline discipline holds:** with the events transport present,
+  `scripts/check-offline.sh` against the built `public/` still **passes** — `/api/events` is the
+  same configured API origin and `EventSource` is JS-driven, so **no new external asset origin**
+  is introduced. *(D24)*
+
+### Regression (must still pass after this feature lands)
+
+- **All prior criteria AC-1…AC-44 must still pass.** Specifically at risk, and how each is
+  protected:
+  - **AC-13** (polling at the server-advised cadence; incremental `since`) — **scope-amended, not
+    broken:** the cadence clause now governs the **fallback/polling** path; under pubsub the fast
+    poll is *intentionally* replaced by event-driven refetch + the 5-min reconcile (D23), while
+    the **incremental-`since`** behavior is preserved (the `messages` collection still refetches
+    via `since`). On any instance **without** `/api/events` (including the shipped
+    `potatomesh.net` default), AC-13 holds **verbatim**.
+  - **AC-12** (private_mode hides feed; no `/api/messages`) — preserved: a `change:messages` event
+    is **ignored while `private_mode` is true** (no messages refetch), so the feature does not
+    reintroduce message traffic in private mode.
+  - **AC-19** (map shows **no looping motion**) — the flash is one-shot, decaying, rate-capped,
+    and event-driven (D28); it introduces **no looping motion**.
+  - **AC-37** (transport abstracted; UI unchanged on swap) — the events transport keeps the
+    `{ start, stop, running }` contract and the store's subscriber contract is **unchanged**; the
+    diff channel is **additive**.
+  - **AC-31** (degraded + auto-recover) — extended to the streaming path by **AC-49**; the polling
+    fallback path is unchanged.
+  - **AC-29 / AC-30** (bounded long-run; no layout jump) — protected by **AC-51** (teardown/caps)
+    and **AC-50** (compositor-only flash).
+  - **AC-6** (offline check) — protected by **AC-52** (no new asset origin).
+
+---
+
 ## Definition of Done
 
 meshint is **done** when: every AC above passes (auto checks green, observable checks demonstrated,

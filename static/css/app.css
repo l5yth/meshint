@@ -200,7 +200,7 @@ html, body {
 
 /* ===== map: Leaflet phosphor theming + FX overlays ===== */
 .panel-map { background: var(--bg); }
-.map-leaflet { position: absolute; inset: 0; }
+.map-leaflet { position: absolute; inset: 0; isolation: isolate; }
 
 .leaflet-container {
   background: var(--bg) !important;
@@ -261,6 +261,39 @@ html, body {
 .ml-title { margin-bottom: 3px; font-size: 9px; letter-spacing: 0.08em; color: var(--fg-dim); }
 .ml-row { display: flex; align-items: center; gap: 7px; }
 .ml-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+/* update flash — one-shot ring "pings" on changed/active nodes (SPEC.md D28). The ring flashes
+   WHITE (most visible on the dark map), then fades to the node's protocol color (--mf). Event-
+   driven and self-terminating (NOT looping motion — honors D1/AC-19); animates transform/opacity/
+   color on a separate overlay, so no layout reflow (AC-30). Rings auto-remove (AC-29). */
+.map-flash { position: absolute; inset: 0; z-index: 401; pointer-events: none; overflow: hidden; }
+.mf-ring {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px; /* center the ring on the projected point */
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  opacity: 0;
+  color: #fff; /* start white; the keyframes bleed to the protocol color (--mf) */
+  box-shadow: 0 0 12px currentColor, inset 0 0 6px currentColor;
+  animation: mf-ping 1.2s ease-out both;
+  will-change: transform, opacity;
+}
+@keyframes mf-ping {
+  0% { transform: scale(0.4); opacity: 0; color: #fff; }
+  10% { opacity: 1; color: #fff; }
+  40% { opacity: 0.85; }
+  55% { color: var(--mf, #fff); }
+  100% { transform: scale(2.7); opacity: 0; color: var(--mf, #fff); }
+}
+@keyframes mf-fade {
+  0% { opacity: 0.85; color: #fff; }
+  100% { opacity: 0; color: var(--mf, #fff); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mf-ring { animation-name: mf-fade; transform: none; }
+}
 
 /* ===== live feed ===== */
 .panel-feed { display: flex; flex-direction: column; }

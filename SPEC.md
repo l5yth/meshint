@@ -197,3 +197,60 @@ Pubsub push (SSE/WebSocket) via the swappable transport; possible multi-instance
     The `?api=` / `?d=` override chain (D7) is unchanged. CLAUDE.md and README prose are updated so the
     shipped default is stated openly — no silent drift. Unit tests are unaffected (they assert against the
     imported constant and explicit `buildConfig`, not the literal host). *(amends D7)*
+
+---
+
+## Feature: Realtime updates via pubsub (SSE) + update flash — confirmed 2026-06-24
+
+> Use the upstream **`/api/events`** Server-Sent-Events stream as the **primary** live source
+> when available, replacing fast polling: populate state from the REST API on load, then apply
+> pushed changes and **flash** changed nodes/messages on the map (ambient, non-looping).
+> Realizes the D9/§5/§11 "swappable transport → future pubsub" path. Live on
+> `dweb.potatomesh.net` today; instances without it transparently keep polling.
+>
+> **Conflict check.** *Extends* D9, §5, §11, and D8 (adds runtime capability detection).
+> *Consistent with* D1/§7.2/AC-19 — the flash is event-driven, decaying, coalesced, and
+> **non-looping** (ambient-cinematic; D28), so the locked "no looping motion" rule is honored,
+> not amended; D2 (read-only — SSE is server→client, refetches are GET); D5/AC-6 (native
+> `EventSource` to the same configured origin — no dependency, no new asset origin); D22/§0
+> (shipped default unchanged — prod just polls until it ships events); AC-37 (new transport
+> keeps the `{start,stop,running}` contract; the store's subscriber contract is unchanged).
+> *Amends* **AC-13** (scope only): the server-advised cadence governs the *fallback* path; under
+> pubsub the fast poll is replaced by event-driven refetch + a 5-min reconcile (D23), while the
+> incremental-`since` clause still holds. **No locked decision is contradicted.**
+
+23. **Transport — pubsub-primary + reconcile backstop.** When `/api/events` is reachable, an SSE
+    transport is the **primary** live source. The fast per-cadence poll is replaced by
+    (a) **event-driven refetches** (D25) and (b) a **5-minute reconcile** full `refresh()` as a
+    backstop against missed/dropped events. With no pubsub, behavior is **unchanged**: polling at
+    the `/version` cadence (default 60s). The UI is populated from the REST API on load **first**,
+    then kept live by the stream. *(extends D9/§5/§11; amends AC-13 scope)*
+24. **SSE via native `EventSource`.** `/api/events` is `text/event-stream`, CORS `*`. Consumed
+    with the browser-native **`EventSource`** — no vendored dependency, no WebSocket, and **no new
+    asset origin** (the same configured API host), so `check-offline.sh`/AC-6 is unaffected.
+    *(honors D5, D2)*
+25. **Coarse change signals → refetch-and-diff.** Each `event: change` carries
+    `data:{"collection":"<name>"}` (`nodes`, `positions`, `messages`, `telemetry`, `instances`) —
+    **not the row**. On a change meshint **refetches that collection** (incrementally where
+    supported — messages via `since`), recomputes presence/counters via the existing transforms,
+    and **diffs** against current state. `positions` is handled as a `nodes` change (position
+    lives on the node object). Bursts are **coalesced** (~300 ms) into one batched refetch; an
+    unknown collection triggers a light reconcile. *(honors D2/D8/D15; AC-13/14/15 transforms
+    unchanged)*
+26. **Runtime capability detection (no config flag).** `/version` advertises no pubsub flag, so
+    availability is detected **live**: open the `EventSource`; success (`onopen` / the `: connected`
+    comment) → enable pubsub-primary; a **fatal** error (readyState `CLOSED` — 404/CORS/wrong
+    content-type) → close it and fall back to polling. A **transient** drop after a good connect
+    keeps the existing reconnect + OFFLINE/degraded behavior, then resumes. *(honors §0/D22;
+    preserves AC-31)*
+27. **Store diff channel (additive).** The store stays the single source of truth and
+    transport-agnostic; it gains an **additive** signal reporting *what changed* (added/updated
+    node ids, new message ids) so the UI can flash precisely. The full-replace `refresh()` and the
+    existing subscriber contract are **unchanged** (back-compat). *(honors AC-37)*
+28. **Update flash — ambient-cinematic, non-looping.** On a diff (**never** on initial load),
+    changed/new **node markers** flash a one-shot ring that **flashes white and fades to the
+    node's protocol color**, **decaying in ~1.2 s**; a **new message** flashes its **sender's node
+    marker** (the feed row keeps its existing entry animation). Flashes are **coalesced and
+    rate-capped** so a busy mesh cannot strobe; the effect is self-terminating with **no looping
+    motion**, and animates **transform/opacity/color on a separate overlay** so there is **no
+    layout reflow**. *(consistent with D1/§7.2/AC-19 — no amendment; honors AC-29/AC-30)*

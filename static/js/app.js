@@ -4,7 +4,7 @@
 import { readBrowserConfig } from "./config.js";
 import { createApiClient } from "./api.js";
 import { createStore } from "./store.js";
-import { createPollingTransport } from "./transport.js";
+import { startTransports } from "./transport.js";
 import { mount } from "./ui/dom.js";
 import { createTopbar } from "./ui/topbar.js";
 import { createTicker } from "./ui/ticker.js";
@@ -86,10 +86,18 @@ function boot() {
       // Leaflet unavailable — the rest of the dashboard still runs
     }
 
+    // Flash changed nodes/messages on the map as updates land (B4 implements mapApi.flash).
+    store.subscribeChanges((diff) => {
+      if (mapApi && mapApi.flash) mapApi.flash(diff);
+    });
+
+    // Populate from the REST API first (AC-46), then start live updates: the SSE event
+    // stream when available (primary, with a 5-min reconcile), else polling at the cadence.
+    await store.refresh();
     const intervalSec = (config && config.refreshIntervalSec) || 60;
-    const transport = createPollingTransport({ intervalSec, tick: () => store.refresh() });
-    transport.start();
-    globalThis.__MESHINT__ = { store, transport, map: mapApi, config: cfg };
+    const transports = startTransports({ store, apiBase: cfg.apiBase, intervalSec });
+    globalThis.addEventListener("pagehide", () => transports.stop());
+    globalThis.__MESHINT__ = { store, map: mapApi, config: cfg, transports };
   })();
 }
 

@@ -169,9 +169,48 @@ export async function createMap(container, config = {}) {
     }
   }
 
+  // Update flash (SPEC.md D28). Canvas markers have no per-marker DOM node to animate, so we
+  // project each changed/sender node to a container point and spawn a one-shot CSS ring "ping"
+  // that flashes white and fades to the node's protocol color (transform/opacity/color on a
+  // separate overlay — no layout reflow, AC-30). Event-driven and self-terminating: NOT looping
+  // motion (honors D1/AC-19). Rate-capped so a mass reconcile can't strobe, and every ring
+  // auto-removes so nothing accumulates (AC-29).
+  const flashLayer = el("div", "map-flash");
+  container.append(flashLayer);
+  const MAX_FLASH = 16;
+
+  function flash(diff) {
+    if (!diff) return;
+    const ids = new Set();
+    for (const id of diff.nodeIds || []) ids.add(id);
+    for (const id of diff.senderIds || []) ids.add(id);
+    let spawned = 0;
+    for (const id of ids) {
+      if (spawned >= MAX_FLASH) break; // cap the burst so the kiosk never strobes
+      const n = latest.get(id);
+      if (!n || n.lat == null || n.lon == null) continue;
+      let pt;
+      try {
+        pt = map.latLngToContainerPoint([n.lat, n.lon]);
+      } catch {
+        continue; // map not ready / off-projection — skip this ping
+      }
+      const ring = el("div", "mf-ring");
+      ring.style.left = `${pt.x}px`;
+      ring.style.top = `${pt.y}px`;
+      // --mf is the protocol color the white flash settles into (see .mf-ring keyframes).
+      ring.style.setProperty("--mf", (n.proto && n.proto.color) || "#62b0c4");
+      const kill = () => ring.remove();
+      ring.addEventListener("animationend", kill, { once: true });
+      globalThis.setTimeout(kill, 1400); // safety net if animationend never fires
+      flashLayer.append(ring);
+      spawned++;
+    }
+  }
+
   globalThis.setTimeout(() => map.invalidateSize(), 120);
   globalThis.addEventListener("resize", () => map.invalidateSize());
   renderLegend();
   updateCoords();
-  return { map, setNodes, setActiveProtocols, focus };
+  return { map, setNodes, setActiveProtocols, focus, flash };
 }
