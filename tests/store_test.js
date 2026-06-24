@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { assert, assertEquals } from "./assert.js";
 import { createStore, mergeMessages } from "../static/js/store.js";
 import { createFixtureClient } from "../static/js/fixtures.js";

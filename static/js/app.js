@@ -1,4 +1,5 @@
-// app.js — meshcom entry. Wires the live store into the CRT shell: top-bar chrome
+// SPDX-License-Identifier: Apache-2.0
+// app.js — meshint entry. Wires the live store into the CRT shell: top-bar chrome
 // + ticker (B2) and the Leaflet map (B3). Rail/feed/roster follow in B4–B6. SPEC.md §7.
 import { readBrowserConfig } from "./config.js";
 import { createApiClient } from "./api.js";
@@ -88,7 +89,7 @@ function boot() {
     const intervalSec = (config && config.refreshIntervalSec) || 60;
     const transport = createPollingTransport({ intervalSec, tick: () => store.refresh() });
     transport.start();
-    globalThis.__MESHCOM__ = { store, transport, map: mapApi, config: cfg };
+    globalThis.__MESHINT__ = { store, transport, map: mapApi, config: cfg };
   })();
 }
 

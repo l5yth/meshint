@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // stats.js — derived counters, rates, and breakdowns from normalized data. SPEC.md §6.
 import { PROTOCOL_KEYS } from "./model.js";
 

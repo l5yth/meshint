@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // feedutil.js — pure helpers for the live feed (unit-tested).
 
 /** Index nodes by id for sender lookup. */

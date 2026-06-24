@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // dom.js — minimal hyperscript DOM helper; our vanilla stand-in for createElement (D3).
 export function h(tag, props = null, ...children) {
   const el = document.createElement(tag);

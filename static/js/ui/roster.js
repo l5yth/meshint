@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // roster.js (ui) — searchable, sortable, virtual-scrolled node table. SPEC.md §7.
 // Renders only the visible row window for smooth perf over the full fleet (AC-26).
 import { h } from "./dom.js";
@@ -100,11 +101,8 @@ export function createRoster({ onFocus } = {}) {
         "span",
         { class: "rs-c rs-name" },
         h("span", {
-          class: "rs-dot",
-          style: {
-            background: n.online ? color : "var(--fg-dim)",
-            boxShadow: n.online ? `0 0 5px ${color}` : "none",
-          },
+          class: `rs-dot${n.online ? "" : " off"}`,
+          style: { background: color, boxShadow: n.online ? `0 0 5px ${color}` : "none" },
         }),
         h("span", { class: "mono rs-ell" }, n.long || ""),
       ),

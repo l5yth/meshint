@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
+# SPDX-License-Identifier: Apache-2.0
 # Fail if the built site LOADS any external asset (CDN / webfont / JS / analytics).
 #
-# meshcom is a live dashboard: at RUNTIME it fetch()es the potato-mesh API and loads
+# meshint is a live dashboard: at RUNTIME it fetch()es the potato-mesh API and loads
 # CARTO map tiles (both configurable). Those are JS-driven and intentionally invisible
 # to this scan — what we forbid is *loading code, fonts, or styles from a CDN* in the
 # built output. Leaflet and fonts must be vendored locally (SPEC.md D4/D5; AC-6/7/8).

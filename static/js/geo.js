@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // geo.js — pure geo/format helpers for the map (unit-tested).
 import { fmtAgo } from "./format.js";
 

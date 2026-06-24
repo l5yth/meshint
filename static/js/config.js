@@ -1,4 +1,5 @@
-// config.js — resolve meshcom runtime configuration.
+// SPDX-License-Identifier: Apache-2.0
+// config.js — resolve meshint runtime configuration.
 // Pure, unit-tested functions plus a thin browser binding. SPEC.md D7/D8.
 
 export const DEFAULT_API_BASE = "https://dweb.potatomesh.net";
@@ -43,6 +44,6 @@ export function resolveConfig({ search = "", buildConfig = {} } = {}) {
 export function readBrowserConfig(win) {
   const w = win || (typeof globalThis !== "undefined" ? globalThis : undefined);
   const search = (w && w.location && w.location.search) || "";
-  const buildConfig = (w && w.__MESHCOM_BUILD_CONFIG__) || {};
+  const buildConfig = (w && w.__MESHINT_BUILD_CONFIG__) || {};
   return resolveConfig({ search, buildConfig });
 }

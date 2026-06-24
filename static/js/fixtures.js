@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // fixtures.js — a fake api client backed by snapshot data. Same interface as
 // createApiClient, for offline dev and deterministic tests (AC-18).
 export function createFixtureClient(fixtures = {}) {

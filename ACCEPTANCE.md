@@ -1,4 +1,4 @@
-# meshcom — ACCEPTANCE CRITERIA
+# meshint — ACCEPTANCE CRITERIA
 
 > Phase 1 deliverable (kickoff). These are the **precise, testable** criteria a great result must
 > meet. Written to be judged **standalone**: a reviewer with zero context from the build session
@@ -7,7 +7,7 @@
 
 ## Context for the reviewer (what you're judging)
 
-**meshcom** is a live, **client-side** dashboard that renders the claude.ai/design *"Command Center"*
+**meshint** is a live, **client-side** dashboard that renders the claude.ai/design *"Command Center"*
 (a CRT/phosphor terminal mesh dashboard — see `Command Center.dc.html` + `screenshots/cc.png` in the
 design project) using **real data** from a **potato-mesh** instance. It is an **ambient mission-control
 big-screen** for a LoRa mesh community/camp: who's online, live message traffic, growth, federation reach.
@@ -27,7 +27,7 @@ A criterion **passes** only if it is fully met. Partial = fail (note it).
 ## A. Repository & conventions
 
 - **AC-1** `[auto]` A `LICENSE` file exists and is **Apache-2.0**. *(D6)*
-- **AC-2** `[auto]` `README.md` exists and states: what meshcom is, how to set the API base URL, how to
+- **AC-2** `[auto]` `README.md` exists and states: what meshint is, how to set the API base URL, how to
   build, and how to deploy. A newcomer can run it from the README alone.
 - **AC-3** `[auto]` The repo is a **Zola** project: `config.toml` present and `zola build` exits 0,
   producing `public/`. *(D3, D18)*
@@ -61,11 +61,11 @@ A criterion **passes** only if it is fully met. Partial = fail (note it).
 - **AC-13** `[obs]` Polling runs at the server-advised cadence (default 60s); the **feed fetches
   incrementally** via `since=<last rx_time>` rather than refetching all. *(D9)*
 - **AC-14** `[auto]` **Online presence is computed correctly:** a node counts as online iff its activity —
-  the **latest of `last_heard` or its most-recent message `rx_time`** — is within **4h**. A dedicated unit
+  the **latest of `last_heard` or its most-recent message `rx_time`** — is within **48h** (>24h). A dedicated unit
   test proves a node with a *stale `last_heard` but a recent message* is online (the MeshCore case). *(D15)*
 - **AC-15** `[auto]` Counters are computed from real endpoints and unit-tested: **NODES** = node count,
   **ONLINE** = AC-14 count, **MSGS 24H** = messages with `rx_time ≥ now−24h`, **TELEMETRY** = telemetry
-  count, **PKT/MIN** = rolling arrival rate. *(D8, §6)*
+  count, **PKT/HR** = packets (msgs+telemetry) per hour, 24h-averaged. *(D8, §6)*
 - **AC-16** `[auto]` **Three-protocol model** (Meshtastic/MeshCore/Reticulum) renders with **data-driven
   counts**; with the live data Reticulum is **0** and the UI shows it without error. *(D10)*
 - **AC-17** `[code/auto]` Field mapping matches `SPEC.md` §6: node popups, feed items, and roster columns
@@ -91,7 +91,7 @@ A criterion **passes** only if it is fully met. Partial = fail (note it).
 - **AC-24** `[obs]` **Feed:** newest-first; new messages appear on poll; **pause/resume** works (freezes the
   stream); each item shows channel · from · text · SNR · RSSI · age. *(§7)*
 - **AC-25** `[obs]` **Rail:** protocol filter toggles both map markers and roster; fleet-breakdown bars,
-  packets/min sparkline, channel list with counts, and the % online figure all reflect live data. *(§7)*
+  packets/hr sparkline (24×1h bars), channel list with counts, and the % online figure all reflect live data. *(§7)*
 - **AC-26** `[obs]` **Roster:** search filters by id/name/hw/role; column headers sort; the list **virtual-scrolls**
   smoothly across the full node set (~480+); a "shown / total" count is displayed. *(§7)*
 - **AC-27** `[obs]` **Ticker:** shows **FEDERATION SYNC N INSTANCES** where N = `/api/instances` length, plus
@@ -125,11 +125,16 @@ A criterion **passes** only if it is fully met. Partial = fail (note it).
 
 - **AC-37** `[code]` The data **transport is abstracted** behind a single interface so polling can be
   swapped for SSE/WebSocket pubsub **without changing UI components**. *(D9, D11, §11)*
+- **AC-38** `[auto/code]` Endpoints capped at 1000 upstream are fetched via the **`before` backward
+  cursor** until exhausted (deduping the inclusive boundary), so the dashboard isn't limited to 1000
+  rows. Messages page today (a unit test pages a fake feed **past 1000**); nodes/telemetry use the
+  same `pageAll` helper (cursor = the endpoint's `ORDER BY` field) and paginate automatically once
+  the upstream cursor exists — until then they self-terminate to a single page. *(SPEC.md §5)*
 
 ---
 
 ## Definition of Done
 
-meshcom is **done** when: every AC above passes (auto checks green, observable checks demonstrated,
+meshint is **done** when: every AC above passes (auto checks green, observable checks demonstrated,
 code checks reviewed); `SPEC.md` decisions D1–D18 are still honored (no drift); and the independent
 Phase 4 review (a fresh reviewer judging strictly against this file) reports **zero failures**.

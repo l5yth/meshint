@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // map.js — Leaflet phosphor map. SPEC.md §7, D10/D17.
 // Markers are Leaflet vector/canvas, so they render even if tiles fail (AC-32).
 import { boundsOf, fmtLatLon, popupHtml } from "../geo.js";

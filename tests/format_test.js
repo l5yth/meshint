@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { assertEquals } from "./assert.js";
 import { buildTickerItems, fmtAgo, fmtClock, fmtCount, fmtRate } from "../static/js/format.js";
 

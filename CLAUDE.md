@@ -1,6 +1,6 @@
-# CLAUDE.md — meshcom
+# CLAUDE.md — meshint
 
-meshcom is a live, client-side **ambient mission-control** dashboard for a LoRa mesh
+meshint is a live, client-side **ambient mission-control** dashboard for a LoRa mesh
 community/camp, rendering the "Command Center" design with real data from a **potato-mesh**
 instance. Sister project to `l5yth/dweb-mesh`.
 
@@ -19,7 +19,7 @@ Re-read both before non-trivial work; do not drift without re-confirmation.
 Configurable base URL (default `https://dweb.potatomesh.net`; CORS `*`). Self-config from
 `/version` (site_name, map_center, max_distance_km, refresh_interval_seconds, private_mode).
 Endpoints + field shapes in `SPEC.md` §5–§6. **Online** = activity (latest of `last_heard` or a
-node's recent message `rx_time`) within **4h**.
+node's recent message `rx_time`) within **48h**.
 
 ## Build / test / run
 - `zola build` → `public/`; `zola serve` for dev preview.

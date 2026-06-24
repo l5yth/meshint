@@ -1,8 +1,9 @@
+// SPDX-License-Identifier: Apache-2.0
 // feed.js — live message feed (SPEC.md §7). Newest-first, pausable, honors
 // private_mode, and respects the rail's protocol filter. Message text is rendered
 // as a text node (never HTML).
 import { h } from "./dom.js";
-import { fmtAgo } from "../format.js";
+import { fmtAgo, fmtRate } from "../format.js";
 import { nodesById, protoEnabled, senderLabel } from "../feedutil.js";
 
 const PAUSE = "❚❚ PAUSE";
@@ -14,7 +15,7 @@ export function createFeed() {
   let lastState = {};
   let lastActive = null;
 
-  const rate = h("span", { class: "fd-rate mono" }, "0 pkt/min");
+  const rate = h("span", { class: "fd-rate mono" }, "0 pkt/hr");
   const pauseBtn = h("button", { class: "fd-pause mono" }, PAUSE);
   pauseBtn.addEventListener("click", () => {
     paused = !paused;
@@ -93,7 +94,7 @@ export function createFeed() {
   function update(state, active) {
     lastState = state;
     lastActive = active;
-    rate.textContent = `${(state.counters && state.counters.pktPerMin) || 0} pkt/min`;
+    rate.textContent = `${fmtRate((state.counters && state.counters.pktPerHr) || 0)} pkt/hr`;
     renderIfLive();
   }
 

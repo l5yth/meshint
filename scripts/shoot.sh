@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
+# SPDX-License-Identifier: Apache-2.0
 # Screenshot the built dashboard via headless Chromium against a local static server.
 # Dev tooling only (not used by CI). Usage: scripts/shoot.sh [out.png] [path-with-query]
 set -eu
-OUT="${1:-/tmp/meshcom.png}"
+OUT="${1:-/tmp/meshint.png}"
 PAGE="${2:-}"
 PORT=8765
 

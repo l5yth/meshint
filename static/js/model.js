@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // model.js — protocol metadata + pure normalizers (raw potato-mesh JSON → internal
 // shapes). SPEC.md §6, D10. Tolerant of missing optional fields (AC-33).
 

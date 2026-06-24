@@ -1,4 +1,5 @@
-// store.js — the meshcom state store. SPEC.md §5, D8/D9/D15.
+// SPDX-License-Identifier: Apache-2.0
+// store.js — the meshint state store. SPEC.md §5, D8/D9/D15.
 // Single source of truth: fetches via the injected api client, normalizes, computes
 // presence + counters, and notifies subscribers. Transport-agnostic — the app
 // composes it with a transport (poll now, pubsub later), so the store never knows
@@ -33,7 +34,7 @@ export function mergeMessages(existing, incoming, limit) {
   return [...byId.values()].sort((a, b) => (b.rxTime ?? 0) - (a.rxTime ?? 0)).slice(0, limit);
 }
 
-export function createStore({ apiClient, clock, messageBufferLimit = 500 } = {}) {
+export function createStore({ apiClient, clock, messageBufferLimit = 5000 } = {}) {
   const listeners = new Set();
   let state = {
     status: "connecting", // connecting | live | degraded

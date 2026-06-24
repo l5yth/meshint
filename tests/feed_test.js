@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { assertEquals } from "./assert.js";
 import { nodesById, protoEnabled, senderLabel } from "../static/js/feedutil.js";
 

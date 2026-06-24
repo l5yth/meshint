@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // format.js — pure presentation helpers (unit-tested).
 
 /** Thousands-separated integer, or "—" for non-finite input. */

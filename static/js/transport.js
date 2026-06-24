@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // transport.js — pluggable update transport. SPEC.md D9 / AC-37.
 // The store depends only on this { start, stop, running } contract, so a future
 // SSE or WebSocket transport can replace polling without touching the store or UI.

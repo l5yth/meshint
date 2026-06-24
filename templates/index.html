@@ -11,7 +11,7 @@
   <script>
     // Build-time defaults injected from config.toml [extra]; config.js resolves
     // the effective values (?api= override, normalization). SPEC.md D7/D8.
-    window.__MESHCOM_BUILD_CONFIG__ = {
+    window.__MESHINT_BUILD_CONFIG__ = {
       apiBase: "{{ config.extra.api_base | safe }}",
       tileUrl: "{{ config.extra.tile_url | safe }}",
       tileAttribution: "{{ config.extra.tile_attribution | safe }}",

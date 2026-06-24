@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // Minimal zero-dependency assertions — keeps `deno test` fully offline (no node:assert).
 export function assertEquals(actual, expected, msg) {
   const a = JSON.stringify(actual);

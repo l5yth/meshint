@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 # .claude/hooks/guard.py — PreToolUse guard for risky shell actions.
 # Reads the tool-call JSON on stdin; prints a deny|ask decision for dangerous
 # commands and exits 0 (normal handling) otherwise.
@@ -31,7 +32,7 @@ if re.search(r":\s*\(\s*\)\s*\{|\bmkfs\b|\bdd\b[^\n]*\bof=/dev/|>\s*/dev/(sd|nvm
 if re.search(r"\b(curl|wget)\b[^\n|]*\|\s*(sudo\s+)?(ba|z|da)?sh\b", c):
     emit("deny", "Refusing curl/wget piped into a shell.")
 if re.search(r"\b(npm|pnpm|yarn)\s+publish\b|\bcargo\s+publish\b", c):
-    emit("deny", "Package publishing is blocked for meshcom.")
+    emit("deny", "Package publishing is blocked for meshint.")
 
 # ---- ASK: risky but sometimes legitimate ----
 if re.search(r"\bgit\s+push\b[^\n]*(--force\b|-f\b|--force-with-lease\b)", c):

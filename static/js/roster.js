@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // roster.js — pure roster filtering/sorting (unit-tested). Columns drive both the
 // header and the sort. HOPS is intentionally absent (no node field — SPEC.md D16).
 export const COLUMNS = [

@@ -1,4 +1,5 @@
-/* meshcom — app.css. CRT/phosphor theme + command-center layout (SPEC.md §7, D3/D5).
+/* SPDX-License-Identifier: Apache-2.0 */
+/* meshint — app.css. CRT/phosphor theme + command-center layout (SPEC.md §7, D3/D5).
    Fonts bundled locally; @font-face src paths are RELATIVE to this file so the
    stylesheet stays portable if base_url ever changes (matches dweb-mesh). */
 @font-face {
@@ -463,6 +464,7 @@ aside#rail { overflow-y: auto; }
 .rs-ell { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .rs-name { display: flex; align-items: center; gap: 7px; overflow: hidden; }
 .rs-dot { width: 6px; height: 6px; flex: none; }
+.rs-dot.off { opacity: 0.4; } /* offline: protocol color, muted */
 .rs-bat { display: flex; align-items: center; gap: 5px; }
 .rs-bat-track { width: 22px; height: 6px; flex: none; background: #0a140e; border: 1px solid var(--line); }
 .rs-bat-fill { display: block; height: 100%; }

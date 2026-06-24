@@ -1,4 +1,4 @@
-# meshcom — SPEC
+# meshint — SPEC
 
 > Status: **LOCKED — all 18 decisions (D1–D18) confirmed 2026-06-23.**
 > Re-verified at every later checkpoint so we don't drift from intent. Any change requires re-confirmation.
@@ -21,7 +21,7 @@
 
 ## §1 Purpose & core decision (CONFIRMED in interview)
 
-meshcom is a **real, live, client-side** rendering of the Command Center design, fed by a
+meshint is a **real, live, client-side** rendering of the Command Center design, fed by a
 potato-mesh instance, built as an **ambient mission-control** for a mesh community/camp —
 an **always-on big-screen / kiosk** showing, at a glance: who's online, live message traffic
 by channel, network growth, and federation reach. It is *celebratory situational awareness*,
@@ -77,15 +77,15 @@ Freifunk box, S3, *or dropped into a Zola site*), matching "deployable anywhere 
 | Design element | Real source | Resolution |
 |---|---|---|
 | Counter NODES | `/api/nodes` length (or instance `nodes_count`) | dynamic, not 3,000 |
-| Counter ONLINE (+ map/roster online dot) | node "active" within **4h**, where activity = latest of node `last_heard` **OR** that node's most-recent message `rx_time` | chat counts as presence (MeshCore sends few adverts/telemetry) — OPEN-1 resolved |
+| Counter ONLINE (+ map/roster online dot) | node "active" within **48h**, where activity = latest of node `last_heard` **OR** that node's most-recent message `rx_time` | chat counts as presence (MeshCore sends few adverts/telemetry) — OPEN-1 resolved |
 | Counter MSGS 24H | `/api/messages` since `now-24h` | `since` param |
 | Counter TELEMETRY | `/api/telemetry` count | dynamic |
-| Counter PKT/MIN | rolling msg(+telemetry) arrival rate | computed client-side |
+| Counter PKT/HR | msgs+telemetry packets per hour, 24h-averaged | computed client-side |
 | Map (3,000 Seattle nodes) | `/api/nodes` lat/lon; center/bounds from `/version` | **Berlin/~480, data-driven** |
 | Node popup fields | node object (id, names, hw, role, snr, rssi via telemetry, batt, seen) | direct |
 | Feed item | message object (`channel_name, from_id→short_name, text, snr, rssi, rx_time`) | direct |
 | Rail: protocol filter/breakdown | per-`protocol` counts | 3 protocols, data-driven (§8) |
-| Rail: packets/min sparkline | rolling rate history | computed |
+| Rail: packets/hr sparkline | 24 hourly bars over the last 24h | computed |
 | Rail: channels | distinct `channel_name` w/ message counts | direct |
 | Rail: MESH HEALTH 98.x% | *no API field* | **replaced with % nodes online** (OPEN-2 resolved) |
 | Roster col HOPS | *not on node object* | **dropped** (OPEN-2 resolved) |
@@ -97,7 +97,7 @@ Freifunk box, S3, *or dropped into a Zola site*), matching "deployable anywhere 
 1. **Top bar** — brand (from `/version`), counters, UTC clock, LIVE pulse. *(high)*
 2. **Map** — real nodes, protocol-colored, center/bounds from `/version`, popups, sweep/scan FX. *(high)*
 3. **Live feed** — newest-first messages, channel/from/snr/rssi, pause, `private_mode` aware. *(high)*
-4. **Left rail** — protocol filter, fleet breakdown, packets/min sparkline, channels, federation/health. *(high)*
+4. **Left rail** — protocol filter, fleet breakdown, packets/hr sparkline, channels, federation/health. *(high)*
 5. **Node roster** — search, sortable, virtual-scroll, click→locate on map. *(medium)*
 6. **Status ticker** — federation + live metrics. *(medium)*
 7. **CRT/kiosk polish** — scanlines/vignette, responsive to display sizes, degraded/offline state. *(high for big-screen)*
@@ -157,10 +157,10 @@ Pubsub push (SSE/WebSocket) via the swappable transport; possible multi-instance
 
 ### Resolved picks (confirmed 2026-06-23)
 
-15. **Online window:** a node is "online" if it has **activity within 4h**, where activity =
+15. **Online window:** a node is "online" if it has **activity within 48h** (>24h), where activity =
     the latest of its node `last_heard` **or** its most-recent message `rx_time`. Chat traffic
     counts as presence — MeshCore sends few adverts/telemetry, so `last_heard` alone understates it.
     (Implication: the data layer must join recent messages back to nodes to compute presence.)
 16. **Unmapped mockup bits:** MESH HEALTH → **% of nodes online**; roster **HOPS column dropped**.
 17. **Map tiles:** default **CARTO dark**, **tile URL configurable** (self-hosted/Freifunk override).
-18. **Project shape:** meshcom is **its own Zola repo** (sibling to dweb-mesh).
+18. **Project shape:** meshint is **its own Zola repo** (sibling to dweb-mesh).

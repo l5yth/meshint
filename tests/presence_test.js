@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { assert, assertEquals } from "./assert.js";
 import { computePresence, latestMessageBySender } from "../static/js/presence.js";
 
@@ -11,7 +12,7 @@ Deno.test("node with a recent advert is online", () => {
 });
 
 Deno.test("stale advert but recent chat → ONLINE (the MeshCore case, AC-14)", () => {
-  const nodes = [{ id: "!mc", lastHeard: NOW - 20 * H }]; // advert 20h old
+  const nodes = [{ id: "!mc", lastHeard: NOW - 50 * H }]; // advert 50h old (beyond the window)
   const messages = [{ fromId: "!mc", rxTime: NOW - H }]; // but chatted 1h ago
   const { nodes: out, onlineCount } = computePresence(nodes, messages, NOW);
   assert(out[0].online, "chat activity must make it online");
@@ -20,7 +21,7 @@ Deno.test("stale advert but recent chat → ONLINE (the MeshCore case, AC-14)", 
 });
 
 Deno.test("silent and no messages beyond the window → offline", () => {
-  const { onlineCount } = computePresence([{ id: "!z", lastHeard: NOW - 5 * H }], [], NOW);
+  const { onlineCount } = computePresence([{ id: "!z", lastHeard: NOW - 50 * H }], [], NOW);
   assertEquals(onlineCount, 0);
 });
 

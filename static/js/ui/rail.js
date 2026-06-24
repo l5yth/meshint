@@ -1,4 +1,5 @@
-// rail.js — left rail: protocol filter, fleet breakdown, packets/min sparkline,
+// SPDX-License-Identifier: Apache-2.0
+// rail.js — left rail: protocol filter, fleet breakdown, packets/hr sparkline,
 // channels, federation, mesh health. SPEC.md §7, D10/D11.
 import { h, mount } from "./dom.js";
 import { PROTOCOL_KEYS, PROTOCOLS } from "../model.js";

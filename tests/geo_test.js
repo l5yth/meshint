@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { assert, assertEquals } from "./assert.js";
 import { boundsOf, esc, fmtLatLon, popupHtml } from "../static/js/geo.js";
 

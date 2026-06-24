@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { assert, assertEquals } from "./assert.js";
 import { createPollingTransport } from "../static/js/transport.js";
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // scripts/demo-data.js — Bucket 1 live demo. Runs the REAL data layer against a
 // potato-mesh instance and prints the computed state. No UI.
 //   deno run --allow-net scripts/demo-data.js [apiBase]

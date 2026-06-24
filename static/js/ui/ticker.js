@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 // ticker.js — scrolling status ticker. SPEC.md §7, D11.
 // Re-renders the marquee only when the item set actually changes, so the scroll
 // animation isn't restarted on every poll.
