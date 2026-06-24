@@ -95,7 +95,9 @@ Freifunk box, S3, *or dropped into a Zola site*), matching "deployable anywhere 
 ## §7 UI compartments (priority tuned for ambient mission-control)
 
 1. **Top bar** — brand (from `/version`), counters, UTC clock, LIVE pulse. *(high)*
-2. **Map** — real nodes, protocol-colored, center/bounds from `/version`, popups, sweep/scan FX. *(high)*
+2. **Map** — real nodes, protocol-colored, center/bounds from `/version`, popups. *(high)*
+   *(2026-06-24: the looping radar-sweep + scan-line map FX were removed for ambient/kiosk comfort
+   per D1 — too fatiguing to stare at on an always-on display; static CRT scanlines/vignette (§7.7) remain.)*
 3. **Live feed** — newest-first messages, channel/from/snr/rssi, pause, `private_mode` aware. *(high)*
 4. **Left rail** — protocol filter, fleet breakdown, packets/hr sparkline, channels, federation/health. *(high)*
 5. **Node roster** — search, sortable, virtual-scroll, click→locate on map. *(medium)*

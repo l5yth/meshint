@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Dependabot — keep CI action versions current (SPEC.md D13/D19).
+#
+# github-actions is the only ecosystem Dependabot supports for this repo: the app
+# vendors Leaflet + fonts locally (no npm/package.json), and Deno (deno.json /
+# deno.lock, incl. the npm:@types/node dev type) is not a Dependabot ecosystem.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

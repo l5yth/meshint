@@ -77,7 +77,8 @@ A criterion **passes** only if it is fully met. Partial = fail (note it).
 
 - **AC-19** `[obs]` All seven regions are present and laid out per the design: **top bar** (brand · counters ·
   UTC clock · LIVE), **left rail**, **center map**, **right live feed**, **node roster**, **status ticker**,
-  plus **CRT overlays** (scanlines + vignette) and the map **radar sweep + scan line**. *(D12, §7)*
+  plus **CRT overlays** (scanlines + vignette). *(D12, §7; the map's looping radar-sweep + scan-line FX
+  were intentionally removed 2026-06-24 for ambient comfort — the map shows **no looping motion**.)*
 - **AC-20** `[obs]` Visual language matches the mockup: phosphor palette (green `#41ff8a`, amber `#ffb24a`,
   cyan `#6fe6ff` on near-black), Press Start 2P headings + monospace body, glow/text-shadow treatment.
   Compare against `screenshots/cc.png`.

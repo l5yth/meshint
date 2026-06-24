@@ -235,29 +235,6 @@ html, body {
 .pp-k { color: var(--fg-dim); }
 .pp-sep { border-top: 1px dashed var(--line); margin: 4px 0; }
 
-.map-sweep {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 150%;
-  height: 150%;
-  transform: translate(-50%, -50%);
-  background: conic-gradient(from 0deg, rgba(65, 255, 138, 0.1), rgba(65, 255, 138, 0) 60deg);
-  animation: sweep 7s linear infinite;
-  pointer-events: none;
-  z-index: 401;
-  mix-blend-mode: screen;
-}
-.map-scan {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(65, 255, 138, 0.5), transparent);
-  animation: scanv 5.5s linear infinite;
-  pointer-events: none;
-  z-index: 401;
-}
 .map-coords {
   position: absolute;
   top: 9px;
@@ -284,12 +261,6 @@ html, body {
 .ml-title { margin-bottom: 3px; font-size: 9px; letter-spacing: 0.08em; color: var(--fg-dim); }
 .ml-row { display: flex; align-items: center; gap: 7px; }
 .ml-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-
-@keyframes sweep { to { transform: translate(-50%, -50%) rotate(360deg); } }
-@keyframes scanv {
-  0% { top: -2%; }
-  100% { top: 102%; }
-}
 
 /* ===== live feed ===== */
 .panel-feed { display: flex; flex-direction: column; }
@@ -487,8 +458,7 @@ body[data-status="connecting"] .topbar { box-shadow: inset 0 2px 0 var(--cyan-di
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .map-sweep, .map-scan, .tk-track, .tb-led, .fd-led, .tb-dot, .rl-spark-bar {
+  .tk-track, .tb-led, .fd-led, .tb-dot, .rl-spark-bar {
     animation: none !important;
   }
-  .map-sweep { display: none; }
 }

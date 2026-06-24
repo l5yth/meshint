@@ -37,7 +37,7 @@ export async function createMap(container, config = {}) {
   const mapEl = el("div", "map-leaflet");
   const coords = el("div", "map-coords");
   const legend = el("div", "map-legend");
-  container.append(mapEl, el("div", "map-sweep"), el("div", "map-scan"), coords, legend);
+  container.append(mapEl, coords, legend);
 
   const hasCenter = validCenter(config.mapCenter);
   const map = L.map(mapEl, {
