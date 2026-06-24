@@ -2,6 +2,11 @@ name: ci
 on:
   push:
   pull_request:
+  workflow_dispatch:
+
+# Least-privilege default token; the deploy job widens this for Pages only.
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -33,3 +38,43 @@ jobs:
 
       - name: Offline check
         run: sh scripts/check-offline.sh
+
+  # Publish public/ to GitHub Pages — only on push to main (or manual dispatch),
+  # and only after the build gate above passes. Pull requests and forks never deploy.
+  # Authenticates with the built-in GITHUB_TOKEN via OIDC; no repo secret. SPEC.md D19/D20.
+  deploy:
+    needs: build
+    if: "github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Zola
+        uses: taiki-e/install-action@v2
+        with:
+          tool: zola@0.22.1
+
+      - name: Build
+        run: zola build
+
+      - name: Offline check (gate publish on offline-clean output)
+        run: sh scripts/check-offline.sh
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

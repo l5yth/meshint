@@ -13,8 +13,9 @@ generate_feeds = false
 minify_html = false
 
 [extra]
-# Data source (SPEC.md D7/D8). Override per-load with ?api=<url>.
-api_base = "https://dweb.potatomesh.net"
+# Data source (SPEC.md D7/D22). Shipped default = the public potatomesh.net mesh; override
+# per-load with ?api=<url> or ?d=<domain>. Code fallback stays dweb (dev/test) — see config.js.
+api_base = "https://potatomesh.net"
 # Map tiles (SPEC.md D17): CARTO dark by default; point at a self-hosted/Freifunk
 # tile server to stay fully off-grid.
 tile_url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"

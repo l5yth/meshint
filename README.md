@@ -13,13 +13,14 @@ for the acceptance criteria.
 
 ## Configure
 
-The data source is configurable (default `https://dweb.potatomesh.net`):
+The data source is configurable (default `https://potatomesh.net`):
 
 - **Per load:** append `?api=https://your.instance` (full URL), or the shorthand
   `?d=your.instance` (bare domain → `https://`), to the dashboard URL.
 - **Build default:** set `[extra].api_base` in `config.toml`.
 
-Resolution order: `?api=` → `?d=` → `config.toml` `[extra].api_base` → built-in default.
+Resolution order: `?api=` → `?d=` → `config.toml` `[extra].api_base` (ships `https://potatomesh.net`)
+→ built-in fallback (`https://dweb.potatomesh.net`).
 
 The instance's `/version` further self-configures the UI (site name, map center, refresh
 cadence, private mode). Map tiles default to CARTO dark; change `[extra].tile_url` for a
@@ -37,6 +38,10 @@ sh scripts/check-offline.sh # assert no external asset/CDN references in public/
 ```
 
 ## Deploy
+
+Pushes to `main` auto-publish to **<https://meshint.potatomesh.net>** via GitHub Actions →
+GitHub Pages (`.github/workflows/ci.yml`); the custom domain comes from `static/CNAME`. One-time
+repo setup: **Settings → Pages → Source = "GitHub Actions."**
 
 `zola build` produces a static `public/`. Serve it from any static host. For a subpath, build
 with `zola build --base-url /sub/`.

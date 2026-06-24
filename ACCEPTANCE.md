@@ -133,6 +133,52 @@ A criterion **passes** only if it is fully met. Partial = fail (note it).
 
 ---
 
+## Feature: CI deploy (GitHub Pages)
+
+> Continuous deployment of the built `public/` to **`https://meshint.potatomesh.net`** via GitHub
+> Actions + GitHub Pages. New decisions **D19–D22** in `SPEC.md`. Judge these standalone, then verify
+> the regression line below. *(Repo: `git@github.com:l5yth/meshint.git`.)*
+
+### K. Continuous deployment
+
+- **AC-39** `[auto]` A GitHub Actions workflow publishes the built `public/` to **GitHub Pages**. The
+  deploy step is **gated**: it runs **only on `push` to `main`** (plus manual `workflow_dispatch`) and
+  **`needs` the build/test/offline-check gate**; it does **not** run on `pull_request` or for forks. A
+  reviewer can confirm the trigger conditions and job dependency by reading `.github/workflows/`. *(D19, D20)*
+- **AC-40** `[code]` The deploy authenticates with the built-in **`GITHUB_TOKEN` via OIDC** under
+  **least-privilege** `permissions:` (`pages: write`, `id-token: write`). **No repo secret** (`secrets.*`,
+  deploy keys, PATs) and **no third-party deploy action** are used. *(D19)*
+- **AC-41** `[auto]` A **`static/CNAME`** file contains exactly `meshint.potatomesh.net`; `zola build`
+  emits `public/CNAME`. The offline check (**AC-6**) still passes with the file present, and `base_url`
+  remains `/` so the same artifact still runs from any static host (**AC-9**). *(D21, D18)*
+- **AC-42** `[auto/code]` The **shipped** default API base is the public mesh:
+  `config.toml [extra].api_base == "https://potatomesh.net"`, so a no-query-param load targets it. The
+  **code-level `DEFAULT_API_BASE` stays `https://dweb.potatomesh.net`** as the documented last-resort
+  fallback, and the `?api=` / `?d=` override chain still resolves per D7. The config unit tests pass. *(D22, D7)*
+- **AC-43** `[auto]` **Publishing is gated on offline-clean output:** the deploy job runs
+  `scripts/check-offline.sh` (or equivalent) against the built site **before** the Pages deploy, so a build
+  that fails the offline check **cannot** be published. *(D20)*
+- **AC-44** `[obs]` After a push to `main` (and the one-time repo setting **Pages → Source = "GitHub
+  Actions"**), **`https://meshint.potatomesh.net`** serves the dashboard over **HTTPS** with a valid
+  auto-provisioned certificate, defaulting (no query param) to the `potatomesh.net` instance. *(D19, D21, D22)*
+
+### Regression (must still pass after this feature lands)
+
+- **All prior criteria AC-1…AC-38 must still pass.** Specifically at risk, and how each is protected:
+  - **AC-36** (CI runs build+tests+offline-check on push/PR) — the existing `build` job is left
+    **unchanged**; deploy is an *added* job, so the gate still runs on every push and PR.
+  - **AC-6** (offline check) — the `CNAME` file is a bare hostname with no scanned extension, and
+    `api_base` lives in an inline `<script>` body (not a `src`/`href`/`@import`/`url()`), so neither is an
+    asset origin; the check stays green.
+  - **AC-9** (runs from any static host) — `base_url` stays `/`; no host-coupling introduced.
+  - **AC-10 / AC-34** (config resolution + transform unit tests) — tests assert against the *imported*
+    `DEFAULT_API_BASE` constant and explicit `buildConfig`, not the literal host, so changing the shipped
+    default does not break them.
+  - **AC-2** (README documents build **and deploy**) — README is updated to document the auto-deploy, the
+    live URL, and the new shipped default; it must remain runnable-from-the-README.
+
+---
+
 ## Definition of Done
 
 meshint is **done** when: every AC above passes (auto checks green, observable checks demonstrated,

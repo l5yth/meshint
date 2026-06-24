@@ -164,3 +164,34 @@ Pubsub push (SSE/WebSocket) via the swappable transport; possible multi-instance
 16. **Unmapped mockup bits:** MESH HEALTH → **% of nodes online**; roster **HOPS column dropped**.
 17. **Map tiles:** default **CARTO dark**, **tile URL configurable** (self-hosted/Freifunk override).
 18. **Project shape:** meshint is **its own Zola repo** (sibling to dweb-mesh).
+
+---
+
+## Feature: CI deploy (GitHub Pages) — confirmed 2026-06-24
+
+> Continuous deployment of the built `public/` to **`https://meshint.potatomesh.net`** via GitHub
+> Actions + GitHub Pages. Extends D13 (CI) with a publish stage; amends D7's *shipped* default API
+> base. DNS for the custom domain is ready (CNAME/ALIAS → GitHub Pages).
+
+19. **Deploy target:** GitHub Pages via **GitHub Actions** — `actions/upload-pages-artifact` +
+    `actions/deploy-pages` authenticating with **OIDC** (`permissions: pages: write, id-token: write`).
+    **No third-party action and no repo secret** (the built-in `GITHUB_TOKEN` is sufficient — keeps the
+    no-secrets posture; `guard.py` already allowlists `*.potatomesh.net`). *(honors D2, D5)*
+20. **Trigger & gating:** deploy runs **only on `push` to `main`** plus manual **`workflow_dispatch`**.
+    The deploy job **`needs:` the existing `build` gate** (fmt/lint/test → `zola build` → offline-check)
+    and **re-runs `check-offline.sh` before publishing**, so nothing reaches the live site unless CI is
+    green and offline-clean. **Pull requests and forks never deploy** (no publish, no token exposure).
+    The existing `build` job is left unchanged. *(extends D13; preserves AC-36)*
+21. **Custom domain:** served at **`https://meshint.potatomesh.net`** via a committed **`static/CNAME`**
+    (Zola copies `static/` → `public/CNAME`). **`base_url` stays `/`** (host-less, portable — the same
+    artifact still runs on any static host). The `CNAME` file holds only a bare hostname, so it is not an
+    asset origin and is invisible to the offline check. **One-time manual repo setting required:** GitHub
+    repo → Settings → Pages → **Source = "GitHub Actions"** (cannot be set from code; the operator must do
+    it once). *(honors D18; preserves AC-6, AC-9)*
+22. **Production default API base (amends D7):** ship **`config.toml [extra].api_base =
+    "https://potatomesh.net"`** so the live kiosk (no query param) shows the **public** mesh. The
+    code-level last-resort fallback **`DEFAULT_API_BASE` stays `https://dweb.potatomesh.net`** (the
+    CORS-verified dev/test instance per §0, used only when no build config and no query param are present).
+    The `?api=` / `?d=` override chain (D7) is unchanged. CLAUDE.md and README prose are updated so the
+    shipped default is stated openly — no silent drift. Unit tests are unaffected (they assert against the
+    imported constant and explicit `buildConfig`, not the literal host). *(amends D7)*

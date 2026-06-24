@@ -4,7 +4,7 @@ meshint is a live, client-side **ambient mission-control** dashboard for a LoRa 
 community/camp, rendering the "Command Center" design with real data from a **potato-mesh**
 instance. Sister project to `l5yth/dweb-mesh`.
 
-**Source of truth:** `SPEC.md` (locked decisions D1–D18) and `ACCEPTANCE.md` (AC-1…AC-37).
+**Source of truth:** `SPEC.md` (locked decisions D1–D22) and `ACCEPTANCE.md` (AC-1…AC-44).
 Re-read both before non-trivial work; do not drift without re-confirmation.
 
 ## Hard rules
@@ -16,7 +16,8 @@ Re-read both before non-trivial work; do not drift without re-confirmation.
 - **Static output** via Zola; deployable to any static host.
 
 ## Data source
-Configurable base URL (default `https://dweb.potatomesh.net`; CORS `*`). Self-config from
+Configurable base URL (shipped default `https://potatomesh.net`; CORS `*`; dev/test fallback
+`https://dweb.potatomesh.net`). Self-config from
 `/version` (site_name, map_center, max_distance_km, refresh_interval_seconds, private_mode).
 Endpoints + field shapes in `SPEC.md` §5–§6. **Online** = activity (latest of `last_heard` or a
 node's recent message `rx_time`) within **48h**.
@@ -26,7 +27,8 @@ node's recent message `rx_time`) within **48h**.
 - Unit-test data transforms (documented runner) — must pass.
 - Lint/format — must be clean.
 - `scripts/check-offline.sh` — asserts no disallowed remote origins.
-- CI (GitHub Actions) runs build + tests + offline-check.
+- CI (GitHub Actions) runs build + tests + offline-check, then **deploys to GitHub Pages**
+  (`meshint.potatomesh.net`) on push to `main`. SPEC.md D19–D22.
 
 ## Conventions
 - Match dweb-mesh layout: `content/ templates/ static/{css,js,fonts,vendor} scripts/`.

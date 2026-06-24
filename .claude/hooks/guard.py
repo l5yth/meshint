@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-# .claude/hooks/guard.py — PreToolUse guard for risky shell actions.
+# .claude/hooks/guard.py — PreToolUse guard for risky shell actions + protected-path edits.
 # Reads the tool-call JSON on stdin; prints a deny|ask decision for dangerous
 # commands and exits 0 (normal handling) otherwise.
 import json, re, sys
@@ -18,9 +18,21 @@ try:
     data = json.load(sys.stdin)
 except Exception:
     sys.exit(0)
-if data.get("tool_name") != "Bash":
+tool = data.get("tool_name")
+ti = data.get("tool_input") or {}
+
+# ---- Edit/Write: protect the CI deploy pipeline + the custom-domain CNAME ----
+# These files are changed via the Edit/Write tools (not Bash), so the shell rules
+# below never see them. Ask before touching the deploy workflow or the domain claim.
+if tool in ("Edit", "Write"):
+    p = str(ti.get("file_path", "") or "")
+    if re.search(r"(^|/)\.github/workflows/", p) or re.search(r"(^|/)static/CNAME$", p):
+        emit("ask", "Touches CI workflow or custom-domain CNAME — confirm.")
     sys.exit(0)
-c = (data.get("tool_input") or {}).get("command", "")
+
+if tool != "Bash":
+    sys.exit(0)
+c = ti.get("command", "")
 if not c.strip():
     sys.exit(0)
 
